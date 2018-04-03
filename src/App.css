@@ -1,0 +1,11 @@
+
+.App-header {
+  background-color: #222;
+  height: 130px;
+  padding: 30px !important;
+}
+
+.MainView {
+  min-height: 100vh;
+  margin-top: 3em;
+}
