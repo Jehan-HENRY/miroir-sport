@@ -16,7 +16,7 @@ class App extends Component {
         >
           Miroir & Sport
           <Header.Subheader>
-            L&apos;application de mise en page de fiche technique ;-)
+            L&apos;application de création de fiche technique ;-)
           </Header.Subheader>
         </Header>
         <EntryForm />
