@@ -28,8 +28,9 @@ class EntryForm extends Component {
       description: "",
       characteristics: "",
       dimensions: "",
-      standards: "",
       images: "",
+      date: "",
+      update: "-",
 
       background: "",
       footer: "",
@@ -46,7 +47,6 @@ class EntryForm extends Component {
       description: "",
       characteristics: "",
       dimensions: "",
-      standards: "",
       toggleModal: !this.state.toggleModal
     });
   }
@@ -84,23 +84,27 @@ class EntryForm extends Component {
     document
       .getElementById("files")
       .addEventListener("change", this.handleFileSelect, false);
+    var now = new Date();
+    var day = now.getDate();
+    var month = now.getMonth() + 1;
+    var year = now.getFullYear();
+    var date = day + "/" + month + "/" + year;
+    this.setState({
+      date: date
+    });
   }
 
   handleFileSelect(evt) {
-    var files = evt.target.files; // FileList object
-    // Loop through the FileList and render image files as thumbnails.
+    var files = evt.target.files;
     for (var i = 0, f; (f = files[i]); i++) {
-      // Only process image files.
       if (!f.type.match("image.*")) {
         continue;
       }
 
       var reader = new FileReader();
 
-      // Closure to capture the file information.
       reader.onload = (theFile => {
         return e => {
-          // Render thumbnail.
           var span = document.createElement("span");
           span.innerHTML = [
             "<span>",
@@ -120,7 +124,6 @@ class EntryForm extends Component {
         };
       })(f);
 
-      // Read in the image file as a data URL.
       reader.readAsDataURL(f);
     }
   }
@@ -134,6 +137,14 @@ class EntryForm extends Component {
     pdfMake.vfs = vfs;
 
     var docDefinition = {
+      info: {
+        title: this.state.product,
+        author: "Romain Bonnefoy",
+        subject: "Fiche Technique",
+        creator: "Romain Bonnefoy",
+        producer: "Romain Bonnefoy",
+        CreationDate: new Date()
+      },
       pageMargins: [50, 100, 50, 75],
       background: {
         image: this.state.background,
@@ -163,21 +174,6 @@ class EntryForm extends Component {
           alignment: "center"
         },
         {
-          table: {
-            widths: [200],
-            body: [
-              [
-                {
-                  border: [false, false, false, false],
-                  text: "Description",
-                  style: "subtitle"
-                }
-              ]
-            ]
-          },
-          style: "subheader"
-        },
-        {
           text: this.state.description,
           alignment: "justify",
           style: "content"
@@ -189,7 +185,7 @@ class EntryForm extends Component {
               [
                 {
                   border: [false, false, false, false],
-                  text: "Caractéristiques",
+                  text: "CARACTERISTIQUES",
                   style: "subtitle"
                 }
               ]
@@ -209,7 +205,7 @@ class EntryForm extends Component {
               [
                 {
                   border: [false, false, false, false],
-                  text: "Dimensions",
+                  text: "DIMENSIONS",
                   style: "subtitle"
                 }
               ]
@@ -229,7 +225,7 @@ class EntryForm extends Component {
               [
                 {
                   border: [false, false, false, false],
-                  text: "Normes",
+                  text: "PHOTO",
                   style: "subtitle"
                 }
               ]
@@ -238,52 +234,57 @@ class EntryForm extends Component {
           style: "subheader"
         },
         {
-          text: this.state.standards,
-          alignment: "justify",
-          style: "content"
+          image: this.state.images[0],
+          width: 350,
+          alignment: "center"
         },
         {
           table: {
-            widths: [200],
+            widths: [200, 200],
             body: [
               [
                 {
                   border: [false, false, false, false],
-                  text: "Photo",
+                  text: "Date de création\nDernière mise à jour",
+                  fillColor: "#007f9f",
+                  color: "white",
                   style: "subtitle"
+                },
+                {
+                  border: [false, false, false, false],
+                  text: this.state.date + "\n" + this.state.update
                 }
               ]
             ]
           },
-          style: "subheader"
-        },
-        {
-          image: this.state.images,
-          width: 350,
-          alignment: "center",
+          style: "date"
         }
       ],
       styles: {
         product: {
           fontSize: 24,
-          margin: [0, 0, 0, 30],
-          bold: true
+          margin: [0, -20, 0, 20]
         },
         reference: {
           fontSize: 14,
           margin: [0, 30, 50]
         },
         subheader: {
-          fontSize: 13,
+          fontSize: 12,
           fillColor: "#007f9f",
           color: "white",
-          margin: [0, 15, 0, 15]
+          margin: [0, 10, 0, 10]
         },
         subtitle: {
           margin: [55, 0, 0, 0]
         },
         content: {
-          margin: [60, 0, 0, 0]
+          margin: [60, 0, 0, 0],
+          fontSize: 12
+        },
+        date: {
+          margin: [0, 15, 0, 15],
+          fontSize: 10
         }
       },
       images: {
@@ -361,17 +362,6 @@ class EntryForm extends Component {
             required
             label="Dimensions"
             placeholder="Dimensions"
-            readOnly={this.state.toggleEdit ? true : false}
-          />
-          <Form.Input
-            value={this.state.standards}
-            onChange={evt =>
-              this.setState({
-                standards: evt.target.value
-              })
-            }
-            label="Normes"
-            placeholder="Normes"
             readOnly={this.state.toggleEdit ? true : false}
           />
           <Grid
