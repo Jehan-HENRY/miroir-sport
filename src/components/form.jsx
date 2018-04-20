@@ -219,24 +219,10 @@ class EntryForm extends Component {
           style: "content"
         },
         {
-          table: {
-            widths: [200],
-            body: [
-              [
-                {
-                  border: [false, false, false, false],
-                  text: "PHOTO",
-                  style: "subtitle"
-                }
-              ]
-            ]
-          },
-          style: "subheader"
-        },
-        {
           image: this.state.images[0],
           width: 350,
-          alignment: "center"
+          alignment: "center",
+          margin: [0, 10, 0, 10]
         },
         {
           table: {
@@ -246,8 +232,6 @@ class EntryForm extends Component {
                 {
                   border: [false, false, false, false],
                   text: "Date de création\nDernière mise à jour",
-                  fillColor: "#007f9f",
-                  color: "white",
                   style: "subtitle"
                 },
                 {
@@ -263,10 +247,10 @@ class EntryForm extends Component {
       styles: {
         product: {
           fontSize: 24,
-          margin: [0, -20, 0, 20]
+          margin: [0, 0, 0, 20]
         },
         reference: {
-          fontSize: 14,
+          fontSize: 12,
           margin: [0, 30, 50]
         },
         subheader: {
