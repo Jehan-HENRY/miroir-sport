@@ -158,7 +158,8 @@ class EntryForm extends Component {
         columns: [
           {
             image: this.state.logo,
-            fit: [279, 80]
+            fit: [200, 57],
+            margin: [22, 20]
           },
           {
             text: "Fiche Technique\nRéf: " + this.state.reference,
@@ -222,17 +223,16 @@ class EntryForm extends Component {
           image: this.state.images[0],
           width: 350,
           alignment: "center",
-          margin: [0, 10, 0, 10]
+          margin: [0, 20, 0, 20]
         },
         {
           table: {
-            widths: [200, 200],
+            widths: [100, 100],
             body: [
               [
                 {
                   border: [false, false, false, false],
-                  text: "Date de création\nDernière mise à jour",
-                  style: "subtitle"
+                  text: "Date de création\nDernière mise à jour"
                 },
                 {
                   border: [false, false, false, false],
@@ -247,11 +247,11 @@ class EntryForm extends Component {
       styles: {
         product: {
           fontSize: 24,
-          margin: [0, 0, 0, 20]
+          margin: [0, 0, 0, 40]
         },
         reference: {
           fontSize: 12,
-          margin: [0, 30, 50]
+          margin: [0, 35, 50]
         },
         subheader: {
           fontSize: 12,
