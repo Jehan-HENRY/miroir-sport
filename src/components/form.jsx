@@ -28,7 +28,8 @@ class EntryForm extends Component {
       description: "",
       characteristics: "",
       dimensions: "",
-      images: "",
+      photos: "",
+      schemas: "",
       date: "",
       update: "-",
 
@@ -37,7 +38,8 @@ class EntryForm extends Component {
       logo: ""
     };
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleFileSelect = this.handleFileSelect.bind(this);
+    this.handlePhotoSelect = this.handlePhotoSelect.bind(this);
+    this.handleSchemaSelect = this.handleSchemaSelect.bind(this);
   }
 
   handleSubmit() {
@@ -49,6 +51,7 @@ class EntryForm extends Component {
       dimensions: "",
       toggleModal: !this.state.toggleModal
     });
+    $("span").html("");
   }
 
   getDataUri(url, callback) {
@@ -81,9 +84,14 @@ class EntryForm extends Component {
         logo: dataUri
       });
     });
+
     document
-      .getElementById("files")
-      .addEventListener("change", this.handleFileSelect, false);
+      .getElementById("photos")
+      .addEventListener("change", this.handlePhotoSelect, false);
+    document
+      .getElementById("schemas")
+      .addEventListener("change", this.handleSchemaSelect, false);
+
     var now = new Date();
     var day = now.getDate();
     var month = now.getMonth() + 1;
@@ -94,15 +102,13 @@ class EntryForm extends Component {
     });
   }
 
-  handleFileSelect(evt) {
-    var files = evt.target.files;
-    for (var i = 0, f; (f = files[i]); i++) {
+  handlePhotoSelect(evt) {
+    var photos = evt.target.files;
+    for (var i = 0, f; (f = photos[i]); i++) {
       if (!f.type.match("image.*")) {
         continue;
       }
-
       var reader = new FileReader();
-
       reader.onload = (theFile => {
         return e => {
           var span = document.createElement("span");
@@ -113,24 +119,64 @@ class EntryForm extends Component {
             '" title="',
             escape(theFile.name),
             '"/>',
-            '<a class="delete">&times;</a>',
+            '<a id="deletePhoto" class="delete">&times;</a>',
             "</span>",
             "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
           ].join("");
-          document.getElementById("list").insertBefore(span, null);
+          span.setAttribute("id", "photo");
+          document.getElementById("listPhotos").insertBefore(span, null);
           this.setState({
-            images: [...this.state.images, e.target.result]
+            photos: [...this.state.photos, e.target.result]
           });
         };
       })(f);
+      reader.readAsDataURL(f);
+    }
+  }
 
+  handleSchemaSelect(evt) {
+    var schemas = evt.target.files;
+    for (var i = 0, f; (f = schemas[i]); i++) {
+      if (!f.type.match("image.*")) {
+        continue;
+      }
+      var reader = new FileReader();
+      reader.onload = (theFile => {
+        return e => {
+          var span = document.createElement("span");
+          span.innerHTML = [
+            "<span>",
+            '<img class="thumb" src="',
+            e.target.result,
+            '" title="',
+            escape(theFile.name),
+            '"/>',
+            '<a id="deleteSchema" class="delete">&times;</a>',
+            "</span>",
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+          ].join("");
+          span.setAttribute("id", "schema");
+          document.getElementById("listSchemas").insertBefore(span, null);
+          this.setState({
+            schemas: [...this.state.schemas, e.target.result]
+          });
+        };
+      })(f);
       reader.readAsDataURL(f);
     }
   }
 
   render() {
     $("#checkbox").change(function() {
-      $("#labelUpload").toggleClass("disabled", this.checked);
+      $("#photosUpload").toggleClass("disabled", this.checked);
+      $("#schemasUpload").toggleClass("disabled", this.checked);
+      // $("#deletePhoto").toggleClass("disabled", this.checked);
+    });
+    $("#deletePhoto").click(function() {
+      $("#photo").html("");
+    });
+    $("#deleteSchema").click(function() {
+      $("#schema").html("");
     });
     console.log(this);
     const { vfs } = vfsFonts.pdfMake;
@@ -175,9 +221,27 @@ class EntryForm extends Component {
           alignment: "center"
         },
         {
-          text: this.state.description,
-          alignment: "justify",
-          style: "content"
+          table: {
+            widths: [380, 100],
+            body: [
+              [
+                {
+                  text: this.state.description,
+                  border: [false, false, false, false],
+                  alignment: "justify",
+                  fontSize: 12,
+                  margin: [60, 50, 0, 0]
+                },
+                {
+                  image: this.state.photos[this.state.photos.length -1],
+                  border: [false, false, false, false],
+                  width: 100,
+                  margin: [20, 0, 0, 0],
+                  alignment: "center"
+                }
+              ]
+            ]
+          }
         },
         {
           table: {
@@ -220,7 +284,7 @@ class EntryForm extends Component {
           style: "content"
         },
         {
-          image: this.state.images[0],
+          image: this.state.schemas[this.state.schemas.length -1],
           width: 350,
           alignment: "center",
           margin: [0, 20, 0, 20]
@@ -247,7 +311,7 @@ class EntryForm extends Component {
       styles: {
         product: {
           fontSize: 24,
-          margin: [0, 0, 0, 40]
+          margin: [0, 0, 0, 20]
         },
         reference: {
           fontSize: 12,
@@ -270,9 +334,6 @@ class EntryForm extends Component {
           margin: [0, 15, 0, 15],
           fontSize: 10
         }
-      },
-      images: {
-        background: "test"
       }
     };
 
@@ -357,8 +418,8 @@ class EntryForm extends Component {
             <Grid.Row>
               <Grid.Column width={3}>
                 <label
-                  htmlFor="files"
-                  id="labelUpload"
+                  htmlFor="photos"
+                  id="photosUpload"
                   className="ui basic grey icon button"
                 >
                   <i className="upload icon" />
@@ -366,14 +427,32 @@ class EntryForm extends Component {
                 </label>
                 <input
                   type="file"
-                  id="files"
-                  name="files[]"
-                  multiple
+                  id="photos"
+                  name="photos[]"
                   style={{ display: "none" }}
                 />
               </Grid.Column>
-              <Grid.Column width={13}>
-                <output id="list" />
+              <Grid.Column width={5}>
+                <output id="listPhotos" />
+              </Grid.Column>
+              <Grid.Column width={3}>
+                <label
+                  htmlFor="schemas"
+                  id="schemasUpload"
+                  className="ui basic grey icon button"
+                >
+                  <i className="upload icon" />
+                  &nbsp;&nbsp;Ajouter schéma
+                </label>
+                <input
+                  type="file"
+                  id="schemas"
+                  name="schemas[]"
+                  style={{ display: "none" }}
+                />
+              </Grid.Column>
+              <Grid.Column width={5}>
+                <output id="listSchemas" />
               </Grid.Column>
             </Grid.Row>
           </Grid>
